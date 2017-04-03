@@ -37,6 +37,11 @@ int printMin(){
         cout << currentTop[minIndex] << endl;
     }
 
+    {   // Pop from minIndex queue
+        unique_lock<mutex> locker(g_lockqueue[minIndex]);
+        q[minIndex].pop();
+    }
+
     return minIndex;
 }
 
@@ -55,12 +60,17 @@ void readerFunc()
         finished[i] = false;
 
     for(int i=0; i<n; i++){
-            unique_lock<mutex> locker(g_lockqueue[i]); 
-            while(!q[i].isEmpty()){
-                g_queuecheck[i].wait(locker);
-            }
-            currentTop[i] = q[i].front();
-            q[i].pop();
+        unique_lock<mutex> locker(g_lockqueue[i]); 
+        while(q[i].isEmpty()){
+            g_queuecheck[i].wait(locker);
+        }
+        currentTop[i] = q[i].front();
+
+        // {   
+        //     unique_lock<mutex> locker(g_lockprint); 
+        //     cout << "Reader function start: " << i << " : " << currentTop[i] << endl;
+        // }
+
     }
 
     // update finished
@@ -70,38 +80,42 @@ void readerFunc()
         }
     }
 
-    int minIndex = printMin();
 
     while(!allFinished()){
+        int minIndex = printMin();
         {
             unique_lock<mutex> locker(g_lockqueue[minIndex]); 
-            while(!q[minIndex].isEmpty()){
+            while(q[minIndex].isEmpty()){
                 g_queuecheck[minIndex].wait(locker);
             }
             currentTop[minIndex] = q[minIndex].front();
-            q[minIndex].pop();
         }
         if(currentTop[minIndex] == 0)
             finished[minIndex] = true;
-        minIndex = printMin();
     }
 }
 
 void writerFunc(int id, mt19937& generator){
     // print a starting message
-    {
-        unique_lock<mutex> locker(g_lockprint);
-        cout << "[worker " << id << "] \t running..." << endl;
-    }
+    // {
+    //     unique_lock<mutex> locker(g_lockprint);
+    //     cout << "[worker " << id << "] \t running..." << endl;
+    // }
  
     for(int i=0; i<fileSize; i++){
         // simulate packet receive time 
         this_thread::sleep_for(chrono::seconds(1 + generator() % 5));
-
         unique_lock<mutex> locker(g_lockqueue[id]);
         q[id].push(f[id][i]);
         g_queuecheck[id].notify_one();
     }
+
+    // {
+    //     unique_lock<mutex> locker(g_lockprint);
+    //     unique_lock<mutex> locker1(g_lockqueue[id]);
+    //     cout << "[worker " << id << "] \t first element " << q[id].front() << endl;
+    // }
+
 }
 
 
