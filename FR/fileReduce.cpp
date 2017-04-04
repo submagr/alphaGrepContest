@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 #include <climits>
+#include <algorithm>
 using namespace std;
 
 class myRow;
@@ -13,6 +14,7 @@ myRow** hashedArray;
 vector<packet *> packets;
 vector<myRow *> rawFile;
 int maxId;
+int filesProduced;
 
 class myRow{
     public: 
@@ -57,7 +59,7 @@ int myRow::getSubtreeSize(){
 string myRow::getSubtreeAsString(){
     string res = getString(); 
     for(int i=0; i<children.size(); i++){
-        res = res + "\n" + children[i]->getSubtreeAsString();
+        res = res + "\n" + "\n" + children[i]->getSubtreeAsString();
     }
     return res;
 }
@@ -66,6 +68,9 @@ class packet{ // This is required to avoid calculation of size repeatedly
     public: 
         int size;
         myRow *root; 
+        bool operator < (const packet &p) const{
+            return (size < p.size);
+        }
 };
 
 void getPackets(){
@@ -133,33 +138,92 @@ void readInputFile(char *fileName){
     }
 }
 
+bool comparePtrToPacket(packet* a, packet* b) { 
+    return (*a < *b); 
+}
+
+void dump(vector<packet *> *selected, int sizeLeft){
+    if(sizeLeft <= 0){
+        filesProduced+=1;
+        string fileName = "output_" + to_string(filesProduced) + ".txt";
+        ofstream out(fileName);
+        // cout << "Contents of " << filesProduced << " file:" << endl;
+        for(int i=0; i<selected->size(); i++ ){
+            out << (*selected)[i]->root->getSubtreeAsString() << endl << endl; 
+        }
+        // cout << "-----------------------" << endl << endl;
+        out.close();
+    }else{ // Append to previous file
+        ofstream out;
+        string fileName = "output_" + to_string(filesProduced) + ".txt";
+        out.open(fileName, ios_base::app);
+        // cout << "Contents of " << filesProduced << " file:" << endl;
+        for(int i=0; i<selected->size(); i++ ){
+            out << (*selected)[i]->root->getSubtreeAsString() << endl << endl;
+        }
+        // cout << "-----------------------" << endl << endl;
+        out.close();
+    }
+}
+
+void getSubfiles(int X){
+    while(packets.size() != 0){
+        vector<packet *> selected;
+        packet *current = packets.back();
+        int sizeLeft = X-current->size;
+        selected.push_back(current);
+        packets.pop_back();
+        while(packets.size()!=0 and sizeLeft > 0){
+            bool sizeCrossed = false;
+            int i;
+            for(i=0; i<packets.size(); i++){
+                if(sizeLeft - packets[i]->size <= 0){
+                    sizeCrossed = true;
+                    break;
+                }
+            }
+            if(sizeCrossed){
+                selected.push_back(packets[i]);
+                sizeLeft = sizeLeft - packets[i]->size;
+                packets.erase(packets.begin()+i);
+            }else{
+                selected.push_back(packets.back());
+                sizeLeft = sizeLeft - packets.back()->size;
+                packets.pop_back();
+            }
+        }
+        dump(&selected, sizeLeft);
+    }
+}
+
 int main(int argc, char **argv){
+    filesProduced = 0;
     if(argc < 3){
         cout << "Usage: ./fileReduce <inputFileName> <X: Capacity of smaller file>";
         exit(1);
     }
-    // Read entire file
-    // vector<myRow *> rawFile = readInputFile(argv[1]);
-    // for(int i=0; i<rawFile.size(); i++){
-    //     cout << rawFile[i]->getString() << endl;
-    // }
-    
+    int X = atoi(argv[2]);
     readInputFile(argv[1]); 
-    // Print read lines
+    // // CODE to Print read lines
     // for(int i=0; i<rawFile.size(); i++){
     //     cout << rawFile[i]->getString() << endl;
     // }
     getHashedFile();
     getPackets();
-    // Print grouped packets
+    sort(packets.begin(), packets.end(), comparePtrToPacket);
+    getSubfiles(X);
+    // // CODE to print grouped packets
     // for(int i=0; i<packets.size(); i++){
     //     cout << "Packet " << i << " contains: " << endl;
     //     cout << packets[i]->root->getSubtreeAsString() << endl << endl;
     // }
-    // 
-    // Read each line in class row
-    // Club rows into packets
-    // Sort packets according to their size
+    
+    // // CODE to check boolean operator on packets
+    // cout << packets[0]->size << endl;
+    // cout << packets[1]->size << endl;
+    // cout << (*packets[0] < *packets[1]) << endl;
+    
+    
     // Implement algorithm
     // Write boxes back in file
     // 12 T,SBIBANK,1000,100,20121210,120,20121209103032,1236,0
