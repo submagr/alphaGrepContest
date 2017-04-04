@@ -63,9 +63,9 @@ the contents of their file.
 The exchange sends them each integer in the file as a 12 bytes TCP packet
 in the following format -
 
-  <Exchange Number><Integer>
+  \<Exchange Number\>\<Integer\>
 
-4 bytes for <Exchange Number> and 8 bytes for <Integer>
+4 bytes for \<Exchange Number\> and 8 bytes for \<Integer\>
 
 These packets from any of the N exchanges can come simultaneously in random
 order.
