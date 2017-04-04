@@ -17,13 +17,13 @@ long data[n][fileSize];
 
 mutex g_lockprint;
 
-char * genPacket(char *buff, int exchangeNum, long exchangeInt){
+char * genPacket(char *buff, int id, long d){
     // skip 192 bits = 24 bytes and read 12 bytes from there 
     for(int i=0; i<23; i++){ // Fill random data for first 23 bytes
         buff[i] = '1';
     }
-    *(int *)(buff+23) = exchangeNum;
-    *(long *)(buff+27) = exchangeInt;
+    *(int *)(buff+23) = id;
+    *(long *)(buff+27) = d;
 }
 
 void handleClient(int id, TCPStream *stream){
