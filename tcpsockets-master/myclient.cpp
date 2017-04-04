@@ -11,8 +11,8 @@
 
 using namespace std;
 
-const int n = 2; // number of writer threads
-const int fileSize = 3;
+const int n = 4; // number of writer threads
+const int fileSize = 5;
 long data[n][fileSize];
 
 mutex g_lockprint;
@@ -47,12 +47,29 @@ void handleClient(int id, TCPStream *stream){
 
 void simulateFileData(){
     data[0][0] = 1;
-    data[0][1] = 3;
-    data[0][2] = 0;
+    data[0][1] = 5;
+    data[0][2] = 11;
+    data[0][3] = 1000000;
+    data[0][4] = 0;
 
     data[1][0] = 2;
-    data[1][1] = 4;
-    data[1][2] = 0;
+    data[1][1] = 7;
+    data[1][2] = 13;
+    data[1][3] = 16;
+    data[1][4] = 0;
+
+    data[2][0] = 3;
+    data[2][1] = 4;
+    data[2][2] = 13;
+    data[2][3] = 15;
+    data[2][4] = 0;
+
+    data[3][0] = 3;
+    data[3][1] = 9;
+    data[3][2] = 12;
+    data[3][3] = 14;
+    data[3][4] = 0;
+
 }
 
 int main(int argc, char** argv)

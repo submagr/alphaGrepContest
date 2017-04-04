@@ -7,7 +7,7 @@
 #include <mutex>
 #include <condition_variable>
 
-const int n = 2; // number of writer threads
+const int n = 4; // number of writer threads
 
 myQueue<long> q[n];
 mutex g_lockprint;
