@@ -115,7 +115,6 @@ void writerFunc(int id, mt19937& generator){
     //     unique_lock<mutex> locker1(g_lockqueue[id]);
     //     cout << "[worker " << id << "] \t first element " << q[id].front() << endl;
     // }
-
 }
 
 

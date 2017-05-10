@@ -54,6 +54,9 @@ element myQueue<element>::front(){
         return head->value;
 }
 
+// Following is a shameless workaround 
 template class myQueue<int>;
+template class myQueue<long>;
 template class myQueue<node<float> >;
 template class myQueue<thread *>;
+

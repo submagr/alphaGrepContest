@@ -1,3 +1,13 @@
+/* Author: Shubham Agrawal
+ * Email: agshubh191@gmail.com
+ * Details: Contains code for version queue, i.e.( )
+ * 1. On each insert, delete, version of queue increases
+ * 2. Contents of specific version queue may be asked in query (along with insert, deletes)
+ *
+ * Implementation:
+ * 1. Queue is implemented simply as an array. (PUSH: append at back, POP: move head ptr ahead)
+ * 2. Create arrays VersionHead and VersionTail. Keep track of head and tail of every version
+ */
 #include<stdio.h>
 #include<stdlib.h>
 using namespace std;

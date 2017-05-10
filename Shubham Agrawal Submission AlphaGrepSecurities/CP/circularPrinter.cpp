@@ -1,3 +1,8 @@
+/* Author: Shubham Agrawal 
+ * Email: agshubh191@gmail.com
+ * Details: There is global variable turn (safeguarded by mutex g_lockturn). Every thread waits for turn. On getting turn, It prints it's respactive part, updates turn.
+ *
+ */
 #include <iostream>
 #include <thread>
 #include <mutex>

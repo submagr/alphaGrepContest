@@ -148,7 +148,7 @@ properties:
 
 2. Each record has comma separated values in the following format :-
 
-     type,symbol,price,quantity,expirydate,strikeprice,amendtime,id,parentid
+    type,symbol,price,quantity,expirydate,strikeprice,amendtime,id,parentid
 
 3. A record in the file can be uniquely identified by the "id".
 
